@@ -4,7 +4,6 @@ from typing import Any, Protocol
 
 class SerializationError(Exception):
     """Raised when model serialization or deserialization fails."""
-
     pass
 
 

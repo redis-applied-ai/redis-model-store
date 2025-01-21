@@ -115,14 +115,14 @@ class ModelStore:
         """
         total_start = current_timestamp()
         model_version: Optional[ModelVersion] = None
-        logger.info(f"Starting save operation for model '{name}'")
+        logger.info(f"Saving '{name}' model")
 
         try:
             # Create model version record
             st = current_timestamp()
             logger.debug("Creating model version record")
             model_version = self.model_registry.add_version(name=name, **kwargs)
-            logger.info(f"Added version record ({current_timestamp()-st:.4f}s)")
+            logger.info(f"Added model version record ({current_timestamp()-st:.4f}s)")
 
             # Store model chunks and get their keys
             logger.debug("Starting model storage")
@@ -203,22 +203,22 @@ class ModelStore:
             ModelStoreError: If model loading fails
         """
         total_start = current_timestamp()
-        logger.info(f"Starting load operation for model '{name}'")
+        logger.info(f"Loading '{name}' model")
 
         try:
             st = current_timestamp()
             if not version:
-                logger.debug("Retrieving latest version")
+                logger.debug("Retrieving latest model version")
                 model_version = self.model_registry.get_latest_version(name)
             else:
-                logger.debug(f"Retrieving specific version: {version}")
+                logger.debug(f"Retrieving specified model version: {version}")
                 model_version = self.model_registry.get_version(name, version)
 
-            logger.info(f"Retrieved version metadata ({current_timestamp()-st:.4f}s)")
+            logger.info(f"Retrieved model version metadata ({current_timestamp()-st:.4f}s)")
             model = self._from_redis(model_version.shard_keys)
 
             total_duration = current_timestamp() - total_start
-            logger.info(f"Total load operation completed ({total_duration:.4f}s)")
+            logger.info(f"Load operation completed ({total_duration:.4f}s)")
             return model
 
         except Exception as e:

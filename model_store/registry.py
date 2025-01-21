@@ -252,6 +252,21 @@ class ModelRegistry:
 
         return model_versions
 
+    def _delete_version_and_shards(self, model_version: ModelVersion) -> int:
+        """
+        Helper method to delete a model version and its associated shards.
+
+        Args:
+            model_version (ModelVersion): The model version to delete.
+
+        Returns:
+            int: Number of keys deleted.
+        """
+        version_key = self.model_version_key(model_version.name, model_version.version)
+        keys_to_delete = model_version.shard_keys + [version_key]
+        self.registry_idx.drop_keys(keys_to_delete)
+        return len(keys_to_delete)
+
     def delete_version(self, name: str, version: str) -> int:
         """
         Delete a specific model version from the registry.
@@ -261,14 +276,14 @@ class ModelRegistry:
             version (str): Version identifier to delete.
 
         Returns:
-            int: Number of model versions deleted (0 or 1).
+            int: Number of keys deleted.
 
         Raises:
             ValueError: If the specified version does not exist.
         """
-        version_key = self.model_version_key(name, version)
-        deleted_count = self.registry_idx.drop_keys([version_key])
-        return deleted_count
+        # This will raise ValueError if version doesn't exist
+        model_version = self.get_version(name, version)
+        return self._delete_version_and_shards(model_version)
 
     def clear(self, name: Optional[str] = None) -> int:
         """
@@ -279,16 +294,13 @@ class ModelRegistry:
                 If None, clear all model versions.
 
         Returns:
-            int: Number of model versions that were deleted.
+            int: Number of keys deleted.
         """
         if name:
             model_versions = self.get_all_versions(name)
-            model_version_keys = [
-                self.model_version_key(model_version.name, model_version.version)
-                for model_version in model_versions
-            ]
-            self.registry_idx.drop_keys(model_version_keys)
-            deleted_count = len(model_version_keys)
+            deleted_count = sum(
+                self._delete_version_and_shards(version) for version in model_versions
+            )
+            return deleted_count
         else:
-            deleted_count = self.registry_idx.clear()
-        return deleted_count
+            return self.registry_idx.clear()
