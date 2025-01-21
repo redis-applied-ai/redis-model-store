@@ -11,6 +11,7 @@ logger = setup_logger(__name__)
 
 class ModelStoreError(Exception):
     """Raised when model store I/O operations fail."""
+
     pass
 
 
@@ -214,7 +215,9 @@ class ModelStore:
                 logger.debug(f"Retrieving specified model version: {version}")
                 model_version = self.model_registry.get_version(name, version)
 
-            logger.info(f"Retrieved model version metadata ({current_timestamp()-st:.4f}s)")
+            logger.info(
+                f"Retrieved model version metadata ({current_timestamp()-st:.4f}s)"
+            )
             model = self._from_redis(model_version.shard_keys)
 
             total_duration = current_timestamp() - total_start

@@ -1,5 +1,11 @@
 # Redis Model Store
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Language](https://img.shields.io/github/languages/top/redis-applied-ai/redis-model-store)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![GitHub last commit](https://img.shields.io/github/last-commit/redis-applied-ai/redis-model-store)
+[![pypi](https://badge.fury.io/py/redisvl.svg)](https://pypi.org/project/redis-model-store/)
+
 `redis-model-store` is a simple Python library designed to handle versioning and serialization of AI/ML models into Redis. It provides a streamlined way to manage your machine learning models in Redis.
 
 ## Features
@@ -8,7 +14,6 @@
 - **Sharding for Large Models**: Splits large serialized payloads into manageable chunks to optimize Redis storage.
 - **Version Management**: Automatically manages model versions in Redis, allowing you to store and retrieve specific versions.
 
----
 
 ## Installation
 ```bash
@@ -49,12 +54,16 @@ model = RandomForestClassifier()
 model.fit(X_train, y_train)
 
 # Save the model to Redis
-version = model_store.save_model(model, "random_forest")
+version = model_store.save_model(model, name="random_forest", description="Random forest classifier model")
 ```
 
 ### Load models
 ```python
 # Grab the latest model
-model = model_store.load_model("random_forest")
+model = model_store.load_model(name="random_forest")
+
+# Grab a specific model version
+model = model_store.load_model(name="random_forest", version=version)
 ```
 
+## 

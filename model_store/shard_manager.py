@@ -36,7 +36,8 @@ class ModelShardManager:
         self.shard_size = shard_size
         self.serializer = serializer
 
-    def _shardify(self, data: bytes) -> Iterator[bytes]:
+    @staticmethod
+    def _shardify(data: bytes, shard_size: int) -> Iterator[bytes]:
         """
         Split serialized data into fixed-size shards.
 
@@ -47,8 +48,8 @@ class ModelShardManager:
             bytes: Successive shards of the data, each up to shard_size in length.
         """
         total_size = len(data)
-        for start in range(0, total_size, self.shard_size):
-            yield data[start : start + self.shard_size]
+        for start in range(0, total_size, shard_size):
+            yield data[start : start + shard_size]
 
     @staticmethod
     def shard_key(model_name: str, model_version: str, idx: int) -> str:
@@ -65,7 +66,7 @@ class ModelShardManager:
         """
         return f"shard:{model_name}:{model_version}:{idx}"
 
-    def to_shards(self, model: Any) -> List[bytes]:
+    def to_shards(self, model: Any) -> Iterator[bytes]:
         """
         Convert model into smaller chunks (shards) ready for storage.
 
@@ -74,14 +75,13 @@ class ModelShardManager:
 
         Returns:
             List[bytes]: List of binary shards derived from the model.
-            TODO -- returns a generator here
 
-        Raises:
-            SerializationError: If model serialization fails.
+        Yields:
+            bytes: Successive shards of the data, each up to shard_size in length.
         """
         try:
             serialized_data = self.serializer.dumps(model)
-            return self._shardify(serialized_data)
+            return self._shardify(serialized_data, self.shard_size)
         except Exception as e:
             raise SerializationError(f"Failed to serialize model: {str(e)}") from e
 
