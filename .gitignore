@@ -1,0 +1,5 @@
+docs/old_redis_model_store.ipynb
+docs/test.py 
+
+__pycache__/
+.mypy_cache/

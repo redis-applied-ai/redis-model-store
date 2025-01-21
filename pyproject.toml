@@ -1,0 +1,78 @@
+[tool.poetry]
+name = "redis-model-store"
+version = "0.0.1"
+description = "Library to handle versioning and serialization of AI/ML models into Redis."
+authors = ["Tyler Hutcherson <tyler.hutcherson@redis.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/redis-applied-ai/redis-model-store"
+repository = "https://github.com/redis-applied-ai/redis-model-store"
+keywords = ["ai", "redis", "redis-client", "model-store", "mlops"]
+classifiers = [
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+]
+packages = [{ include = "model_store", from = "." }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+redisvl = "^0.3.8"
+pydantic = "^2.10.5"
+
+[tool.poetry.group.dev.dependencies]
+black = ">=20.8b1"
+isort = ">=5.6.4"
+pylint = "3.1.0"
+pytest = "8.1.1"
+pytest-cov = "5.0.0"
+mypy = "1.9.0"
+types-redis = "*"
+types-pyyaml = "*"
+types-tabulate = "*"
+treon = "*"
+
+[tool.poetry.group.test.dependencies]
+testcontainers = "^4.3.1"
+
+[tool.poetry.scripts]
+format = "scripts:format"
+check-format = "scripts:check_format"
+sort-imports = "scripts:sort_imports"
+check-sort-imports = "scripts:check_sort_imports"
+check-lint = "scripts:check_lint"
+check-mypy = "scripts:check_mypy"
+test = "scripts:test"
+test-verbose = "scripts:test_verbose"
+test-notebooks = "scripts:test_notebooks"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ['py39', 'py310', 'py311']
+exclude = '''
+(
+  | \.egg
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.nox
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+  | setup.py
+)
+'''
+
+[tool.pytest.ini_options]
+log_cli = true
+asyncio_mode = "auto"
+
+[tool.mypy]
+warn_unused_configs = true
+ignore_missing_imports = true
