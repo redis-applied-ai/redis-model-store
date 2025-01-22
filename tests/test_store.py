@@ -5,7 +5,7 @@ from typing import Generator
 import pytest
 from redis import Redis
 
-from model_store.store import ModelStore, ModelStoreError, ModelVersion
+from redis_model_store.store import ModelStore, ModelStoreError, ModelVersion
 
 
 @pytest.fixture

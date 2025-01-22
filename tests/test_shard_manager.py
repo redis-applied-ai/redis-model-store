@@ -1,7 +1,7 @@
 import pytest
 
-from model_store.serialize import PickleSerializer
-from model_store.shard_manager import ModelShardManager, SerializationError
+from redis_model_store.serialize import PickleSerializer
+from redis_model_store.shard_manager import ModelShardManager, SerializationError
 
 
 @pytest.fixture

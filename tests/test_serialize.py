@@ -1,6 +1,6 @@
 import pytest
 
-from model_store.serialize import PickleSerializer
+from redis_model_store.serialize import PickleSerializer
 
 
 @pytest.fixture

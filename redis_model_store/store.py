@@ -7,8 +7,8 @@ from redisvl.index import SearchIndex
 from redisvl.query import FilterQuery
 from redisvl.query.filter import FilterExpression, Tag
 
-from model_store.shard_manager import ModelShardManager
-from model_store.utils import (
+from redis_model_store.shard_manager import ModelShardManager
+from redis_model_store.utils import (
     PIPELINE_BATCH_SIZE,
     current_timestamp,
     new_model_version,

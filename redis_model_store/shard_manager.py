@@ -1,6 +1,6 @@
 from typing import Any, Iterator, List
 
-from model_store.serialize import PickleSerializer, SerializationError, Serializer
+from redis_model_store.serialize import PickleSerializer, SerializationError, Serializer
 
 
 class ModelShardManager:

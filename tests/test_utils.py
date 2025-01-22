@@ -2,7 +2,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
-from model_store.utils import current_timestamp, new_model_version, setup_logger
+from redis_model_store.utils import current_timestamp, new_model_version, setup_logger
 
 
 def test_setup_logger():
@@ -41,7 +41,7 @@ def test_new_model_version():
 
 
 def test_pipeline_batch_size_constant():
-    from model_store.utils import PIPELINE_BATCH_SIZE
+    from redis_model_store.utils import PIPELINE_BATCH_SIZE
 
     assert isinstance(PIPELINE_BATCH_SIZE, int)
     assert PIPELINE_BATCH_SIZE > 0
