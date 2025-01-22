@@ -34,7 +34,7 @@ Here's a simple example using scikit-learn:
 
 ```python
 from redis import Redis
-from model_store import ModelStore
+from redis_model_store import ModelStore
 from sklearn.ensemble import RandomForestClassifier
 
 # Connect to Redis and initialize store
