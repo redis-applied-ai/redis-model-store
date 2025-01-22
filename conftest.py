@@ -9,7 +9,7 @@ def redis_container():
     # Set the default Redis version if not already set
     os.environ.setdefault("REDIS_VERSION", "edge")
 
-    compose = DockerCompose("tests", compose_file_name="docker-compose.yml", pull=True)
+    compose = DockerCompose("tests", compose_file_name="docker-compose.yaml", pull=True)
     compose.start()
 
     redis_host, redis_port = compose.get_service_host_and_port("redis", 6379)
