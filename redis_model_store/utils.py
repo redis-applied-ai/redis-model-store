@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 #: How many commands to queue in a Redis pipeline before executing.
-PIPELINE_BATCH_SIZE = 256
+PIPELINE_BATCH_SIZE = 64
 
 
 def setup_logger(name):

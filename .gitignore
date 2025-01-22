@@ -3,3 +3,8 @@ docs/test.py
 
 __pycache__/
 .mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+dump.rdb

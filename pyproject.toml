@@ -14,7 +14,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "License :: OSI Approved :: MIT License",
 ]
-packages = [{ include = "model_store", from = "." }]
+packages = [{ include = "redis_model_store", from = "." }]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
@@ -71,7 +71,6 @@ exclude = '''
 
 [tool.pytest.ini_options]
 log_cli = true
-asyncio_mode = "auto"
 
 [tool.mypy]
 warn_unused_configs = true
