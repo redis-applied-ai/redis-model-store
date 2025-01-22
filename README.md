@@ -1,4 +1,4 @@
-# Redis Model Store
+# 🧠 Redis Model Store
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Language](https://img.shields.io/github/languages/top/redis-applied-ai/redis-model-store)
@@ -6,64 +6,115 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/redis-applied-ai/redis-model-store)
 [![pypi](https://badge.fury.io/py/redisvl.svg)](https://pypi.org/project/redis-model-store/)
 
-`redis-model-store` is a simple Python library designed to handle versioning and serialization of AI/ML models into Redis. It provides a streamlined way to manage your machine learning models in Redis.
+Store, version, and manage your ML models in Redis with ease. `redis-model-store` provides a simple yet powerful interface for handling machine learning model artifacts in Redis.
 
-## Features
+## ✨ Features
 
-- **Pluggable Serialization**: Serialize/deserialize any Python object (Numpy arrays, Scikit-Learn, PyTorch, TensorFlow models, etc.).
-- **Sharding for Large Models**: Splits large serialized payloads into manageable chunks to optimize Redis storage.
-- **Version Management**: Automatically manages model versions in Redis, allowing you to store and retrieve specific versions.
+- **🔄 Automatic Versioning**: Track and manage multiple versions of your models
+- **📦 Smart Storage**: Large models are automatically sharded for optimal storage
+- **🔌 Pluggable Serialization**: Works with any Python object (NumPy, PyTorch, TensorFlow, etc.)
+- **🏃‍♂️ High Performance**: Efficient storage and retrieval using Redis pipelining
+- **🛡️ Safe Operations**: Atomic operations with automatic cleanup on failures
 
+## 🚀 Quick Start
 
-## Installation
+### Installation
+
 ```bash
+# Using pip
 pip install redis-model-store
+
+# Or using poetry
+poetry add redis-model-store
 ```
 
-## Usage
+### Basic Usage
 
-See the fully detailed [example notebook](docs/redis_model_store.ipynb) for more assistance in getting started.
+Here's a simple example using scikit-learn:
 
-### Init the ModelStore
 ```python
-from model_store import ModelStore
 from redis import Redis
-
-# Initialize the Redis client
-redis_client = Redis.from_url("redis://localhost:6379")
-
-# Initialize the ModelStore with (optional) shard size
-model_store = ModelStore(redis_client, shard_size=1012 * 100)
-```
-
-### Store a model 
-You can store any serializable Python object.
-```python
+from model_store import ModelStore
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
 
-# Load sample data
-iris = load_iris()
-X_train, X_test, y_train, y_test = train_test_split(
-    iris.data, iris.target, test_size=0.2, random_state=42
-)
+# Connect to Redis and initialize store
+redis = Redis(host="localhost", port=6379)
+store = ModelStore(redis)
 
-# Train a simple RandomForest model
+# Train your model
 model = RandomForestClassifier()
 model.fit(X_train, y_train)
 
-# Save the model to Redis
-version = model_store.save_model(model, name="random_forest", description="Random forest classifier model")
+# Save model with version tracking
+version = store.save_model(
+    model,
+    name="my-classifier",
+    description="Random forest trained on dataset v1"
+)
+
+# List available models
+models = store.list_models()
+print(f"Available models: {models}")
+
+# Load latest version
+model = store.load_model("my-classifier")
+
+# Load specific version
+model = store.load_model("my-classifier", version=version)
+
+# View all versions
+versions = store.get_all_versions("my-classifier")
+for v in versions:
+    print(f"Version: {v.version}, Created: {v.created_at}")
 ```
 
-### Load models
-```python
-# Grab the latest model
-model = model_store.load_model(name="random_forest")
+## 🛠️ Contributing
 
-# Grab a specific model version
-model = model_store.load_model(name="random_forest", version=version)
+We welcome contributions! Here's how to get started:
+
+### Development Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/redis-applied-ai/redis-model-store.git
+cd redis-model-store
 ```
 
-## 
+2. Install poetry if you haven't:
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+3. Install dependencies:
+```bash
+poetry install --all-extras
+```
+
+### Linting and Tests
+
+```bash
+poetry run format
+poetry run check-mypy
+poetry run test
+poetry run test-verbose
+```
+
+### Making Changes
+
+1. Create a new branch:
+```bash
+git checkout -b feat/your-feature-name
+```
+
+2. Make your changes and ensure:
+   - All tests pass (covering new functionality)
+   - Code is formatted 
+   - Type hints are valid
+   - Examples/docs added as notebooks to the `docs/` directory.
+
+3. Push changes and open a PR
+
+
+## 📚 Documentation
+
+For more usage examples check out tbhis [Example Notebook](docs/redis_model_store.ipynb).

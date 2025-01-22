@@ -5,21 +5,16 @@ from model_store.serialize import PickleSerializer, SerializationError, Serializ
 
 class ModelShardManager:
     """
-    Manages sharding and serialization of model data.
+    Manages serialization and sharding of model data.
 
-    This class handles breaking large model objects into manageable shards and serializing
-    them for storage. It provides an abstraction layer between raw model objects and their
-    serialized/sharded representation ready for storage.
+    Handles breaking large objects into manageable chunks and provides
+    serialization/deserialization. This provides an abstraction layer between
+    raw objects and their serialized/sharded representation.
 
-    Key features:
-    - Configurable shard size to optimize for different storage backends
-    - Pluggable serialization via the Serializer protocol
-    - Maintains data integrity across sharding/reassembly
-
-    Example:
-        >>> manager = ModelShardManager()
-        >>> shards = manager.to_shards(large_model)  # Split model into shards
-        >>> reconstructed = manager.from_shards(shards)  # Reassemble model
+    The manager supports:
+    - Configurable shard sizes
+    - Pluggable serialization formats
+    - Efficient streaming of shards
     """
 
     def __init__(self, shard_size: int, serializer: Serializer = PickleSerializer()):
@@ -27,8 +22,11 @@ class ModelShardManager:
         Initialize the shard manager.
 
         Args:
-            shard_size (int): Maximum size in bytes for each shard.
-            serializer (Serializer): Serializer implementation to use. Defaults to pickle.
+            shard_size: Maximum size in bytes for each shard
+            serializer: Serializer implementation to use (default: pickle)
+
+        Raises:
+            ValueError: If shard_size is not positive
         """
         if shard_size <= 0:
             raise ValueError("Shard size must be positive")
@@ -38,15 +36,7 @@ class ModelShardManager:
 
     @staticmethod
     def _shardify(data: bytes, shard_size: int) -> Iterator[bytes]:
-        """
-        Split serialized data into fixed-size shards.
-
-        Args:
-            data (bytes): The full serialized model data.
-
-        Yields:
-            bytes: Successive shards of the data, each up to shard_size in length.
-        """
+        """Split serialized data into fixed-size shards."""
         total_size = len(data)
         for start in range(0, total_size, shard_size):
             yield data[start : start + shard_size]
@@ -57,49 +47,52 @@ class ModelShardManager:
         Generate a storage key for a model shard.
 
         Args:
-            model_name (str): Name of the model.
-            model_version (str): Version identifier of the model.
-            idx (int): Shard index.
+            model_name: Name of the model
+            model_version: Version identifier
+            idx: Shard index number
 
         Returns:
-            str: Formatted storage key for the model shard.
+            Formatted storage key for the shard
         """
         return f"shard:{model_name}:{model_version}:{idx}"
 
-    def to_shards(self, model: Any) -> Iterator[bytes]:
+    def to_shards(self, obj: Any) -> Iterator[bytes]:
         """
-        Convert model into smaller chunks (shards) ready for storage.
+        Convert object into shards ready for storage.
+
+        The object is first serialized then split into fixed-size chunks.
+        Shards are yielded one at a time to minimize memory usage.
 
         Args:
-            model (Any): The model object to shard.
+            obj: The object to shard
 
         Returns:
-            List[bytes]: List of binary shards derived from the model.
+            Iterator yielding binary shards
 
-        Yields:
-            bytes: Successive shards of the data, each up to shard_size in length.
+        Raises:
+            SerializationError: If the object cannot be serialized
         """
         try:
-            serialized_data = self.serializer.dumps(model)
-            return self._shardify(serialized_data, self.shard_size)
+            serialized = self.serializer.dumps(obj)
+            return self._shardify(serialized, self.shard_size)
         except Exception as e:
-            raise SerializationError(f"Failed to serialize model: {str(e)}") from e
+            raise SerializationError(f"Failed to serialize object: {str(e)}") from e
 
     def from_shards(self, shards: List[bytes]) -> Any:
         """
-        Reconstruct a model from its shards.
+        Reconstruct object from shards.
 
         Args:
-            shards (List[bytes]): List of binary shards to reassemble.
+            shards: List of binary shards in order
 
         Returns:
-            Any: The reconstructed model object.
+            The reconstructed object
 
         Raises:
-            SerializationError: If model deserialization fails.
+            SerializationError: If the shards cannot be deserialized
         """
         try:
-            serialized_data = b"".join(shards)
-            return self.serializer.loads(serialized_data)
+            serialized = b"".join(shards)
+            return self.serializer.loads(serialized)
         except Exception as e:
-            raise SerializationError(f"Failed to deserialize model: {str(e)}") from e
+            raise SerializationError(f"Failed to deserialize object: {str(e)}") from e

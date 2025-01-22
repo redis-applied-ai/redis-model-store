@@ -71,7 +71,6 @@ exclude = '''
 
 [tool.pytest.ini_options]
 log_cli = true
-asyncio_mode = "auto"
 
 [tool.mypy]
 warn_unused_configs = true

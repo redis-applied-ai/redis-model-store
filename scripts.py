@@ -2,8 +2,8 @@ import subprocess
 
 
 def format():
-    subprocess.run(["isort", "./model_store", "--profile", "black"], check=True)
-    subprocess.run(["black", "./model_store"], check=True)
+    subprocess.run(["isort", "./model_store", "./tests", "--profile", "black"], check=True)
+    subprocess.run(["black", "./model_store", "./tests"], check=True)
 
 
 def check_format():
