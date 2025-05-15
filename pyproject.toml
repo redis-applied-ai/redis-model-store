@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "redis-model-store"
-version = "0.0.1"
+version = "0.0.2"
 description = "Library to handle versioning and serialization of AI/ML models into Redis."
 authors = ["Tyler Hutcherson <tyler.hutcherson@redis.com>"]
 license = "MIT"
@@ -17,8 +17,8 @@ classifiers = [
 packages = [{ include = "redis_model_store", from = "." }]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-redisvl = "^0.3.8"
+python = ">=3.9,<3.14"
+redisvl = "^0.6.0"
 pydantic = "^2.10.5"
 
 [tool.poetry.group.dev.dependencies]
